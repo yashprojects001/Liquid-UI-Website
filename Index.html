@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Liquid UI</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
+        overflow: hidden;
+        color: white;
+    }
+
+    /* 🔵 Floating Liquid Blobs */
+    .blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.6;
+        animation: move 20s infinite alternate ease-in-out;
+    }
+
+    .blob1 {
+        width: 300px;
+        height: 300px;
+        background: #00c6ff;
+        top: 10%;
+        left: 10%;
+    }
+
+    .blob2 {
+        width: 400px;
+        height: 400px;
+        background: #0072ff;
+        bottom: 10%;
+        right: 10%;
+    }
+
+    @keyframes move {
+        0% { transform: translate(0,0) scale(1); }
+        100% { transform: translate(100px, -100px) scale(1.2); }
+    }
+
+    /* 💎 Glass Card */
+    .card {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        padding: 30px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(20px);
+        text-align: center;
+        box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    }
+
+    /* 🌊 Liquid Button */
+    .btn {
+        margin-top: 20px;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(45deg, #00c6ff, #0072ff);
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: "";
+        position: absolute;
+        width: 300%;
+        height: 300%;
+        top: -100%;
+        left: -100%;
+        background: rgba(255,255,255,0.2);
+        transform: rotate(45deg);
+        transition: 0.5s;
+    }
+
+    .btn:hover::before {
+        top: 0;
+        left: 0;
+    }
+
+    /* 🌊 Canvas Ripple */
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="card">
+    <h2>Liquid UI</h2>
+    <p>Touch the surface</p>
+    <button class="btn">Interact</button>
+</div>
+
+<canvas id="rippleCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("rippleCanvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let ripples = [];
+
+window.addEventListener("mousemove", (e) => {
+    ripples.push({
+        x: e.clientX,
+        y: e.clientY,
+        radius: 0,
+        alpha: 1
+    });
+});
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ripples.forEach((r, i) => {
+        r.radius += 2;
+        r.alpha -= 0.01;
+
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0,200,255,${r.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        if (r.alpha <= 0) ripples.splice(i, 1);
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
